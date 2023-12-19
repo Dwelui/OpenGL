@@ -133,8 +133,8 @@ float vertices_2[] = {
 };
 
 	unsigned int VBOs[2], VAOs[2];
-	glGenVertexArrays(1, &VAOs);
-	glGenBuffers(1, &VBOs);
+	glGenVertexArrays(1, VAOs);
+	glGenBuffers(1, VBOs);
 
 	glBindVertexArray(VAOs[0]);
 
