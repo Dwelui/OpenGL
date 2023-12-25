@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include <shader/shader.h>
+#include <shader.h>
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -20,7 +20,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Shaders", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Textures", NULL, NULL);
 	if(window == NULL)
 	{
 		printf("%s", "Failed to create GLFW window");
@@ -38,13 +38,19 @@ int main()
 	}
 	
 	unsigned int myShader;
-	myShader = createShader("C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/shaders/shader.vs", "C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/shaders/shader.fs");
+	myShader = createShader("C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/textures/shader.vs", "C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/textures/shader.fs");
 
 	float vertices[] = {
 	    // positions         // colors
 	     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
 	    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
 	     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+	};
+
+	float textCoords[] = {
+		0.0f, 0.0f,	// lower-left corner
+		1.0f, 0.0f,	// lower-right corner
+		0.5f, 1.0f	// top-center corner
 	};
 
 	unsigned int VBO, VAO;

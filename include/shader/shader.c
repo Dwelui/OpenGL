@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <shader.h>
+#include <shader/shader.h>
 
 #define INFO_LOG_SIZE 1024
 
@@ -88,44 +88,44 @@ void shaderUse(unsigned int shaderId)
 	glUseProgram(shaderId);
 }
 
-void setBool(Shader shader, const char* name, int value)
+void setBool(unsigned int shaderId, const char* name, int value)
 {
-	glUniform1i(glGetUniformLocation(shader.ID, name), value);
+	glUniform1i(glGetUniformLocation(shaderId, name), value);
 }
 
-void setInt(Shader shader, const char* name, int value)
+void setInt(unsigned int shaderId, const char* name, int value)
 {
-	glUniform1i(glGetUniformLocation(shader.ID, name), value);	
+	glUniform1i(glGetUniformLocation(shaderId, name), value);	
 }
 
-void setFloat(Shader shader, const char* name, float value)
+void setFloat(unsigned int shaderId, const char* name, float value)
 {
-	glUniform1f(glGetUniformLocation(shader.ID, name), value);
+	glUniform1f(glGetUniformLocation(shaderId, name), value);
 }
 
-void checkCompileErrors(unsigned int shader, const char* type)
+void checkCompileErrors(unsigned int shaderId, const char* type)
 {
 	int  success;
 	char infoLog[INFO_LOG_SIZE];
 
 	if (type != "PROGRAM")
 	{
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+		glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
 		
 		if(!success)
 		{
-			glGetShaderInfoLog(shader, INFO_LOG_SIZE, NULL, infoLog);
+			glGetShaderInfoLog(shaderId, INFO_LOG_SIZE, NULL, infoLog);
 			printf("%s%s%s", "ERROR::SHADER::", type, "::COMPILATION_ERROR\n");
 			printf("%s%s", infoLog, "\n-- ---------------------------------------------- --\n");	
 		}
 	}
 	else
 	{
-		glGetProgramiv(shader, GL_LINK_STATUS, &success);
+		glGetProgramiv(shaderId, GL_LINK_STATUS, &success);
 		
 		if(!success)
 		{
-			glGetShaderInfoLog(shader, INFO_LOG_SIZE, NULL, infoLog);
+			glGetShaderInfoLog(shaderId, INFO_LOG_SIZE, NULL, infoLog);
 			printf("%s%s%s", "ERROR::SHADER::", type, "::COMPILATION_ERROR\n");
 			printf("%s%s", infoLog, "\n-- ---------------------------------------------- --\n");	
 		}
