@@ -17,6 +17,8 @@ const unsigned int SCR_HEIGHT = 600;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
+float opacity = 0.5f;
+
 int main()
 {
 	glfwInit();
@@ -46,7 +48,7 @@ int main()
 	myShader = createShader("C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/textures/shader.vs", "C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/textures/shader.fs");
 
 	float vertices[] = {
-	    // positions          // colors           // texture coords
+		 // positions          // colors           // texture coords
 	     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
 	     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
 	    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
@@ -82,21 +84,20 @@ int main()
 
 
 	// Load textures
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	stbi_set_flip_vertically_on_load(true);
+
+	unsigned int texture1;
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		int width, height, nrChannels;
+	int width, height, nrChannels;
 	unsigned char *data = stbi_load("C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/assets/container.jpg", &width, &height, &nrChannels, 0);
 	if(data)
 	{
-		// DEBUG
-		printf("%s %d %d", "Loaded image size: ", width, height);
-
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -107,20 +108,55 @@ int main()
 
 	stbi_image_free(data);
 
+
+	unsigned int texture2;
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	data = stbi_load("C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/assets/awesomeface.png", &width, &height, &nrChannels, 0);
+	if(data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		printf("%s", "Failed to load texture\n");
+	}
+
+	stbi_image_free(data);
+
+	shaderUse(myShader);
+	setInt(myShader, "texture1", 0);
+	setInt(myShader, "texture2", 1);
 	
 	while(!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);		
 
+	
+		setFloat(myShader, "opacity", opacity);
+
+
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 
 		shaderUse(myShader);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -128,6 +164,7 @@ int main()
 	
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 
 	glfwTerminate();
 
@@ -145,4 +182,15 @@ void processInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+
+	if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		opacity -= 0.001;
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		opacity += 0.001;
+	}
+
 }
