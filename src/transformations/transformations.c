@@ -44,9 +44,39 @@ int main()
 		return -1;	
 	}
 
+	// GLMC
+	//vec4 vec = {1.0f, 0.0f, 0.0f, 1.0f};
+	/*
+	mat4 trans = GLM_MAT4_IDENTITY_INIT;
+	
+	glm_rotated(trans, (GLM_PI / 180.0f) * 45.0f, (vec3){0.0f, 0.0f, 1.0f});
+	
+	trans[3][0] = 0.5f;
+	trans[3][1] = 0.5f;
+	trans[3][2] = 0.5f;
+	*/
+/*
+	for(int i = 0; i < 4; i++)
+		for(int j = 0; j < 4; j++) {
+			printf("%1.1ff, ", trans[i][j]);	
+		}
+	printf("\n");
+*/
+	//glm_mat4_transpose(trans);
+	/*
+	for(int i = 0; i < 4; i++) {
+		for(int j = 0; j < 4; j++)
+			printf("%f ", trans[i][j]);
+		printf("\n");
+	}
+	*/
+	//glm_mat4_mul(trans, vec, trans); //wth
+	//glm_mat4_mulv(trans, vec, vec);
+	// printf("%f %f %f %f %s", vec[0], vec[1], vec[2], vec[3], "\n");
+
 	// Create shaders
 	unsigned int myShader;
-	myShader = createShader("C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/textures/shader.vs", "C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/textures/shader.fs");
+	myShader = createShader("C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/transformations/shader.vs", "C:/Users/manta/Desktop/Projects/Coding/C/OpenGL/src/transformations/shader.fs");
 
 	float vertices[] = {
 		 // positions          // colors           // texture coords
@@ -134,7 +164,29 @@ int main()
 	shaderUse(myShader);
 	setInt(myShader, "texture1", 0);
 	setInt(myShader, "texture2", 1);
+
+	// Convert float(*)[] to const float *
 	
+/*
+	float* transv = (float *)calloc(16, sizeof(float));
+
+	for(int i = 0; i < 4; i++)
+		for(int j = 0; j < 4; j++) {
+			transv[4 * i + j] = trans[i][j];
+		}
+*/
+/*
+	printf("\n");
+	for(int i = 0; i < 16; i++)
+		printf("%1.1ff, ", transv[i]);
+*/
+/*
+	unsigned int transformLoc = glGetUniformLocation(myShader, "transform");	
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transv);
+*/
+	
+	mat4 trans = GLM_MAT4_IDENTITY_INIT;
+
 	while(!glfwWindowShouldClose(window))
 	{
 		processInput(window);
@@ -143,7 +195,28 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);		
 
+
+
+
+
 	
+		glm_rotated(trans, (GLM_PI / 180.0f) * 0.05f, (vec3){0.0f, 0.0f, 1.0f});
+	
+		trans[3][0] = 0.5f;
+		trans[3][1] = 0.5f;
+		trans[3][2] = 0.5f;
+
+
+		float* transv = (float *)calloc(16, sizeof(float));
+
+		for(int i = 0; i < 4; i++)
+			for(int j = 0; j < 4; j++)
+				transv[4 * i + j] = trans[i][j];
+
+		unsigned int transformLoc = glGetUniformLocation(myShader, "transform");	
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transv);
+
+				
 		setFloat(myShader, "opacity", opacity);
 
 
